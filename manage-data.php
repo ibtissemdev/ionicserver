@@ -52,20 +52,23 @@ if (!empty($input)) {
   //Ajoute un nouvel enregistrement
  case "create":
 //   TODO: Filtrer les valeurs entrantes
+function valid_donnees($donnees){
+  $donnees = trim($donnees);
+  $donnees = stripslashes($donnees);
+  $donnees = htmlspecialchars($donnees);
+  return $donnees;
+}
+
 $description = valid_donnees($description);
 $location = valid_donnees($location);
 $firstname = valid_donnees($firstname);
 $lastname = valid_donnees($lastname);
 $email = valid_donnees($email);
 
-    function valid_donnees($donnees){
-        $donnees = trim($donnees);
-        $donnees = stripslashes($donnees);
-        $donnees = htmlspecialchars($donnees);
-        return $donnees;
-    }
-    if (!empty($mail)
-    && filter_var($mail, FILTER_VALIDATE_EMAIL))
+
+
+    if (!empty($email)
+    && filter_var($email, FILTER_VALIDATE_EMAIL))
 
 //   TODO: Préparer la requête dans un try/catch
 try {
