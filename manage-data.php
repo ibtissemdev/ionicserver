@@ -2,35 +2,35 @@
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type');
 // TODO: Définir les paramètres de connexion à la base
-class Database {
-  // Connexion à la base de données
-  private $host = "localhost";
-  private  $db_name = "ionicfoundlost";
-  private  $username = "root";
-  private  $password = "";
-  protected  $pdo;
- 
-  public function getPdo()
-  {
-    // TODO: Créer une instance de la classe PDO
-          $this->pdo = new PDO("mysql:host=" . $this->host.";dbname=".$this->db_name, $this->username, $this->password, [
-             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8',
-             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-         ]);
-        
- return $this->pdo;
-  } 
-     
- }
-print_r($_GET);
+try {
+
+  // Connexion base de données 
+   
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  $dbname = "ionicfoundlost";
+
+
+  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+
+}
+
+catch (PDOException $e) {
+  echo "Erreur : " . $e->getMessage();
+}
+//print_r($_GET);
 
 
 // Récupérer le paramètre d’action de l’URL du client depuis $_GET[‘key’] 
 // et nettoyer la valeur
 
-$key = strip_tags($_GET['action']);
-print_r($key);
+$key = strip_tags($_GET['key']);
+
 
 
 // Récupérer les paramètres envoyés par le client vers l’API
@@ -52,23 +52,36 @@ if (!empty($input)) {
   //Ajoute un nouvel enregistrement
  case "create":
 //   TODO: Filtrer les valeurs entrantes
+$description = valid_donnees($description);
+$location = valid_donnees($location);
+$firstname = valid_donnees($firstname);
+$lastname = valid_donnees($lastname);
+$email = valid_donnees($email);
 
+    function valid_donnees($donnees){
+        $donnees = trim($donnees);
+        $donnees = stripslashes($donnees);
+        $donnees = htmlspecialchars($donnees);
+        return $donnees;
+    }
+    if (!empty($mail)
+    && filter_var($mail, FILTER_VALIDATE_EMAIL))
 
 //   TODO: Préparer la requête dans un try/catch
 try {
 
   //   Ajout nouvelle entrée
   
-      $objet = $this->pdo->prepare("INSERT INTO foundlost (status,description, date, location, firstname, lastname,email)
+      $objet = $conn->prepare("INSERT INTO foundlost (status,description, date, location, firstname, lastname,email)
       VALUES(:status, :description, :date, :location, :firstname, :lastname, :email)");
   
-      $objet->bindParam(':status',$status);
-      $objet->bindParam(':description',$description);
-      $objet->bindParam(':date',$date);
-      $objet->bindParam(':location',$location);
-      $objet->bindParam(':firstname',$firstname);
-      $objet->bindParam(':lastname',$lastname);
-      $objet->bindParam(':email',$email);
+      $objet->bindParam(':status',$status,PDO::PARAM_INT);
+      $objet->bindParam(':description',$description,PDO::PARAM_STR);
+      $objet->bindParam(':date',$date,PDO::PARAM_STR);
+      $objet->bindParam(':location',$location,PDO::PARAM_STR);
+      $objet->bindParam(':firstname',$firstname,PDO::PARAM_STR);
+      $objet->bindParam(':lastname',$lastname,PDO::PARAM_STR);
+      $objet->bindParam(':email',$email,PDO::PARAM_STR);
       
       $objet->execute();
   

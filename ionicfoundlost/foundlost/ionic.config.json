@@ -1,7 +1,0 @@
-{
-  "name": "foundlost",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
