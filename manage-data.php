@@ -95,9 +95,6 @@ try {
       echo 'Impossible de traiter les données. Erreur : '.$e->getMessage();
   }
   
-
-
-
 break;
 
   // Mettre à jour un enregistrement existant
