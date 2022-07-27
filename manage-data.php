@@ -113,8 +113,24 @@ if (!empty($input) || isset($_GET)) {
       // Mettre à jour un enregistrement existant
     case "update":
       //   TODO: Nettoyer les valeurs en provenant de l’URL client
+      $id = filter_var($_GET['id']);
       //   TODO: Préparer et exécuter la requête (dans un try/catch)
       // error_log("je suis la : update");
+      try {
+
+        $sth = $conn->prepare("UPDATE foundlost SET status=:status where id_object=$id");
+
+        $sth->bindParam(":status", $status,PDO::PARAM_INT);
+  
+        $sth->execute();
+
+      // error_log('Statut modifié')  ;
+
+    } catch (PDOException $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
+
+
       break;
 
       // Supprimer un enregistrement existant

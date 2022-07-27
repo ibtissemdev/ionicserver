@@ -31,7 +31,7 @@ if (isset( $_GET['id'])){
   try {
 
     
-    $list = "SELECT * FROM foundlost WHERE status=0 AND id_object=".$_GET['id'];
+    $list = "SELECT * FROM foundlost WHERE id_object=".$_GET['id'];
     $sth = $conn->prepare($list);
     $sth->execute();
     $result = $sth->fetch();
@@ -46,7 +46,7 @@ if (isset( $_GET['id'])){
 
   try {
 
-    $list = "SELECT * FROM foundlost WHERE status=0 ORDER BY date DESC";
+    $list = "SELECT * FROM foundlost ORDER BY date DESC";
     $sth = $conn->prepare($list);
     $sth->execute();
     $result = $sth->fetchall();
