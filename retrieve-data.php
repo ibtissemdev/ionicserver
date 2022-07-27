@@ -27,17 +27,42 @@ try {
 
 // TODO : Prépare et exécute la requête de lecture de la table (try/catch)
 
+if (isset( $_GET['id'])){
+  try {
 
-try {
+    
+    $list = "SELECT * FROM foundlost WHERE status=0 AND id_object=".$_GET['id'];
+    $sth = $conn->prepare($list);
+    $sth->execute();
+    $result = $sth->fetch();
+    $objet_perdu=json_encode($result);
+    print_r($objet_perdu);
+  
+  
+  } catch (PDOException $e) {
+    echo 'Impossible de traiter les données. Erreur : ' . $e->getMessage();
+  }
+} else {
 
-  $list = "SELECT * FROM foundlost WHERE status=0 ORDER BY date DESC";
-  $sth = $conn->prepare($list);
-  $sth->execute();
-  $result = $sth->fetchall();
-  $objet_perdu=json_encode($result);
-  print_r($objet_perdu);
+  try {
 
-
-} catch (PDOException $e) {
-  echo 'Impossible de traiter les données. Erreur : ' . $e->getMessage();
+    $list = "SELECT * FROM foundlost WHERE status=0 ORDER BY date DESC";
+    $sth = $conn->prepare($list);
+    $sth->execute();
+    $result = $sth->fetchall();
+    $objet_perdu=json_encode($result);
+    print_r($objet_perdu);
+  
+  
+  } catch (PDOException $e) {
+    echo 'Impossible de traiter les données. Erreur : ' . $e->getMessage();
+  }
+  
 }
+
+
+
+    
+
+
+
