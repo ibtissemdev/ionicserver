@@ -52,6 +52,8 @@ if (!empty($input) || isset($_GET)) {
   @$firstname = strip_tags($data['firstname']);
   @$lastname = strip_tags($data['lastname']);
   @$email = strip_tags($data['email']);
+  @$email_user = strip_tags($data['email_user']);
+  @$password = strip_tags($data['password']);
 
 
 
@@ -62,7 +64,7 @@ if (!empty($input) || isset($_GET)) {
 
     case "create":
       //   TODO: Filtrer les valeurs entrantes
-
+      error_log("je suis dans le create");
 
       function valid_donnees($donnees)
       {
@@ -110,6 +112,57 @@ if (!empty($input) || isset($_GET)) {
 
       break;
 
+    case "user":
+      //   TODO: Filtrer les valeurs entrantes
+      error_log("je suis ici");
+
+      function valid_donnees($donnees)
+      {
+        $donnees = trim($donnees);
+        $donnees = stripslashes($donnees);
+        $donnees = htmlspecialchars($donnees);
+        return $donnees;
+      }
+
+
+
+      $email_user = valid_donnees($email_user);
+      $password = password_hash(valid_donnees($password), PASSWORD_DEFAULT);
+
+
+      if (
+        !empty($email_user)
+        && filter_var($email_user, FILTER_VALIDATE_EMAIL) 
+      )
+
+        //   TODO: Préparer la requête dans un try/catch
+        try {
+          // error_log("je suis ici : create");
+          // print_r($key);
+          // echo "je suis la"; 
+          //   Ajout nouvelle entrée
+
+          // error_log(print_r($objet["email_user"],1));
+
+          $user = $conn->prepare("INSERT INTO user (email_user,password)
+      VALUES(:email_user, :password)");
+
+
+          $user->bindParam(':email_user', $email_user, PDO::PARAM_STR);
+          $user->bindParam(':password', $password, PDO::PARAM_STR);
+
+          $user->execute();
+
+        } catch (PDOException $e) {
+        
+          $user=false;
+          $user_new = json_encode($user);
+       print_r($user_new);
+        }
+
+
+      break;
+
       // Mettre à jour un enregistrement existant
     case "update":
       //   TODO: Nettoyer les valeurs en provenant de l’URL client
@@ -118,17 +171,23 @@ if (!empty($input) || isset($_GET)) {
       // error_log("je suis la : update");
       try {
 
-        $sth = $conn->prepare("UPDATE foundlost SET status=:status where id_object=$id");
+        if ($status == 0) {
+          $sth = $conn->prepare("UPDATE foundlost SET status=1 where id_object=$id");
+          $sth->execute();
+        }
 
-        $sth->bindParam(":status", $status,PDO::PARAM_INT);
-  
-        $sth->execute();
+        if ($status == 1) {
+          $sth = $conn->prepare("UPDATE foundlost SET status=0 where id_object=$id");
+          $sth->execute();
+        }
 
-      // error_log('Statut modifié')  ;
 
-    } catch (PDOException $e) {
+
+        // error_log('Statut modifié')  ;
+
+      } catch (PDOException $e) {
         echo "Erreur : " . $e->getMessage();
-    }
+      }
 
 
       break;
@@ -152,6 +211,35 @@ if (!empty($input) || isset($_GET)) {
       // error_log(print_r($sth,1));
 
       break;
-    
+
+    case "verif":
+
+      try {
+        error_log($email_user);
+
+
+        $user = "SELECT password,email_user FROM user WHERE email_user='$email_user'";
+        $sth = $conn->prepare($user);
+        $sth->execute();
+        $result = $sth->fetch();
+
+        if (empty($result['email_user'])) {
+          $utilisateur = false; }
+
+          else if(count($result) > 0) {
+            if (password_verify($password,  $result['password']) && $result['email_user'] == $email_user) {
+              $utilisateur = true;
+            } else {
+              $utilisateur = false;
+            }
+          }
+        
+        $verif = json_encode($utilisateur);
+        print_r($verif);
+      } catch (PDOException $e) {
+        echo 'Impossible de traiter les données. Erreur : ' . $e->getMessage();
+      }
+
+      break;
   } // fin switch
 } // fin if
