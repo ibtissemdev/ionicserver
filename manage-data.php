@@ -85,6 +85,19 @@ if (!empty($input) || isset($_GET)) {
       if (
         !empty($email)
         && filter_var($email, FILTER_VALIDATE_EMAIL)
+        && !empty($description)
+        && strlen($description) <=50
+        && preg_match("#^[A-Za-zéè '-]+$#",$description)
+        && !empty($location)
+        && strlen($location) <=20
+        && preg_match("#^[A-Za-zéè '-]+$#",$location)
+        && !empty($firstname)
+        && strlen($firstname) <=20
+        && preg_match("#^[A-Za-zéè '-]+$#",$firstname)
+        && !empty($lastname)
+        && strlen($lastname) <=20
+        && preg_match("#^[A-Za-zéè '-]+$#",$lastname)
+
       )
 
         //   TODO: Préparer la requête dans un try/catch
@@ -133,6 +146,7 @@ if (!empty($input) || isset($_GET)) {
       if (
         !empty($email_user)
         && filter_var($email_user, FILTER_VALIDATE_EMAIL) 
+
       )
 
         //   TODO: Préparer la requête dans un try/catch
@@ -143,6 +157,12 @@ if (!empty($input) || isset($_GET)) {
           //   Ajout nouvelle entrée
 
           // error_log(print_r($objet["email_user"],1));
+          $user = "SELECT email_user FROM user WHERE email_user='$email_user'";
+          $sth = $conn->prepare($user);
+          $sth->execute();
+          $result = $sth->fetch();
+
+if(empty($result['email_user'])){
 
           $user = $conn->prepare("INSERT INTO user (email_user,password)
       VALUES(:email_user, :password)");
@@ -152,12 +172,19 @@ if (!empty($input) || isset($_GET)) {
           $user->bindParam(':password', $password, PDO::PARAM_STR);
 
           $user->execute();
+          $util=true;
+        } else {
+          $util=false;
+          
+        }
+        $verif = json_encode($util);
+          print_r($verif);
 
         } catch (PDOException $e) {
-        
-          $user=false;
-          $user_new = json_encode($user);
-       print_r($user_new);
+          echo 'Impossible de traiter les données. Erreur : ' . $e->getMessage();
+      //     $user=false;
+      //     $user_new = json_encode($user);
+      //  print_r($user_new);
         }
 
 
