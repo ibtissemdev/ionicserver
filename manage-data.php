@@ -1,5 +1,7 @@
 <?php
+//Accepte les requêtes venant de n'importe quel site
 header('Access-Control-Allow-Origin: *');
+
 header('Access-Control-Allow-Headers: Content-Type');
 // TODO: Définir les paramètres de connexion à la base
 try {
@@ -26,7 +28,7 @@ try {
 
 
 
-$key = strip_tags($_GET['key']);
+$key = strip_tags($_GET['key']); // supprime les balises html et php
 
 // print_r($key);
 // print_r($_REQUEST['key']);
@@ -38,22 +40,22 @@ $key = strip_tags($_GET['key']);
 // Récupérer les paramètres envoyés par le client vers l’API
 
 
+$input = file_get_contents('php://input'); //données récupérées et entrées dans le fichier php en chaîne de caractère/ en sortie : output
 
-
-$input = file_get_contents('php://input');
+//  error_log(print_r($input,1));
 
 if (!empty($input) || isset($_GET)) {
-  @$data = json_decode($input, true);
-
-  @$description = strip_tags($data['description']);
-  @$status = strip_tags($data['status']);
-  @$date = strip_tags($data['date']);
-  @$location = strip_tags($data['location']);
-  @$firstname = strip_tags($data['firstname']);
-  @$lastname = strip_tags($data['lastname']);
-  @$email = strip_tags($data['email']);
-  @$email_user = strip_tags($data['email_user']);
-  @$password = strip_tags($data['password']);
+  $data = json_decode($input, true);
+  
+  $description = strip_tags($data['description']);
+  $status = strip_tags($data['status']);
+  $date = strip_tags($data['date']);
+  $location = strip_tags($data['location']);
+  $firstname = strip_tags($data['firstname']);
+  $lastname = strip_tags($data['lastname']);
+  $email = strip_tags($data['email']);
+  $email_user = strip_tags($data['email_user']);
+  $password = strip_tags($data['password']);
 
 
 
@@ -268,5 +270,6 @@ if(empty($result['email_user'])){
       }
 
       break;
+      default: echo "erreur : action inconnue";
   } // fin switch
 } // fin if
