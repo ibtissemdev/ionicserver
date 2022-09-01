@@ -47,18 +47,6 @@ $input = file_get_contents('php://input'); //données récupérées et entrées 
 if (!empty($input) || isset($_GET)) {
   $data = json_decode($input, true);
   
-  $description = strip_tags($data['description']);
-  $status = strip_tags($data['status']);
-  $date = strip_tags($data['date']);
-  $location = strip_tags($data['location']);
-  $firstname = strip_tags($data['firstname']);
-  $lastname = strip_tags($data['lastname']);
-  $email = strip_tags($data['email']);
-  $email_user = strip_tags($data['email_user']);
-  $password = strip_tags($data['password']);
-
-
-
 
   // En fonction du mode d’action requis
   switch ($key) {
@@ -68,6 +56,9 @@ if (!empty($input) || isset($_GET)) {
       //   TODO: Filtrer les valeurs entrantes
       error_log("je suis dans le create");
 
+      $status = strip_tags($data['status']);
+      $date = strip_tags($data['date']);
+      
       function valid_donnees($donnees)
       {
         $donnees = trim($donnees);
@@ -76,12 +67,11 @@ if (!empty($input) || isset($_GET)) {
         return $donnees;
       }
 
-      $description = valid_donnees($description);
-      $location = valid_donnees($location);
-      $firstname = valid_donnees($firstname);
-      $lastname = valid_donnees($lastname);
-      $email = valid_donnees($email);
-
+      $description = valid_donnees(strip_tags($data['description']));
+      $location = valid_donnees(strip_tags($data['location']));
+      $firstname = valid_donnees(strip_tags($data['firstname']));
+      $lastname = valid_donnees(strip_tags($data['lastname']));
+      $email = valid_donnees(strip_tags($data['email']));
 
 
       if (
@@ -131,6 +121,9 @@ if (!empty($input) || isset($_GET)) {
       //   TODO: Filtrer les valeurs entrantes
       error_log("je suis ici");
 
+      // $email_user = strip_tags($data['email_user']);
+      // $password = strip_tags($data['password']);
+
       function valid_donnees($donnees)
       {
         $donnees = trim($donnees);
@@ -141,8 +134,8 @@ if (!empty($input) || isset($_GET)) {
 
 
 
-      $email_user = valid_donnees($email_user);
-      $password = password_hash(valid_donnees($password), PASSWORD_DEFAULT);
+      $email_user = valid_donnees(strip_tags($data['email_user']));
+      $password = password_hash(valid_donnees(strip_tags($data['password'])), PASSWORD_DEFAULT);
 
 
       if (
@@ -198,8 +191,9 @@ if(empty($result['email_user'])){
       $id = filter_var($_GET['id']);
       //   TODO: Préparer et exécuter la requête (dans un try/catch)
       // error_log("je suis la : update");
+        $status = "";
       try {
-
+     
         if ($status == 0) {
           $sth = $conn->prepare("UPDATE foundlost SET status=1 where id_object=$id");
           $sth->execute();
@@ -209,8 +203,6 @@ if(empty($result['email_user'])){
           $sth = $conn->prepare("UPDATE foundlost SET status=0 where id_object=$id");
           $sth->execute();
         }
-
-
 
         // error_log('Statut modifié')  ;
 
@@ -244,7 +236,11 @@ if(empty($result['email_user'])){
     case "verif":
 
       try {
-        error_log($email_user);
+       
+        $email_user = strip_tags($data['email_user']);
+        $password = strip_tags($data['password']);
+
+        // error_log($email_user);
 
 
         $user = "SELECT password,email_user FROM user WHERE email_user='$email_user'";
